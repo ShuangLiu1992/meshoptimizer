@@ -1,4 +1,5 @@
 from conan import ConanFile
+import conan.tools.files
 from conan.tools.cmake import CMake, CMakeToolchain, cmake_layout
 import os
 
@@ -12,12 +13,15 @@ class meshoptimizerConan(ConanFile):
     def layout(self):
         cmake_layout(self)
 
+    def export_sources(self):
+        conan.tools.files.copy(self, "*", self.recipe_folder, self.export_sources_folder)
+
     def generate(self):
         tc = CMakeToolchain(self)
         tc.presets_prefix = f"{self.settings.os}_{self.settings.build_type}_{self.settings.arch}"
         tc.generate()
 
-    def package(self):
+    def build(self):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
